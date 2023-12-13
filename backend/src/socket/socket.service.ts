@@ -6,7 +6,7 @@ import { CreateMessageDto } from "src/messages/dto/create-message.dto";
 
 @Injectable()
 export class SocketGatewayService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async handleConnection(client: Socket, wss: Server) {
     try {
@@ -52,8 +52,10 @@ export class SocketGatewayService {
           }
         }
       }
-    } catch (error) {}
+    } catch (error) { }
   }
+
+
 
   async handleDisconnect(client: Socket, wss: Server) {
     try {
@@ -74,7 +76,7 @@ export class SocketGatewayService {
           }
         }
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async updateStatusGeust(senderId: string, wss: Server) {
@@ -123,20 +125,18 @@ export class SocketGatewayService {
       where: { channelId: ids.receivedId },
     });
     for (const member of channelMembers) {
-      wss
-        .to(member.userId)
-        .emit("updateChannel", { idChannel: ids.receivedId });
+      wss.to(member.userId).emit("updateChannel", { idChannel: ids.receivedId });
     }
   }
+
+
 
   async mutedUserInChannel(idChannel: string, wss: Server) {
     const channelMembers = await this.prisma.channelMember.findMany({
       where: { channelId: idChannel },
     });
     for (const member of channelMembers) {
-      wss
-        .to(member.userId)
-        .emit("mutedUserInChannel", { idChannel: idChannel });
+      wss.to(member.userId).emit("mutedUserInChannel", { idChannel: idChannel });
     }
   }
 
@@ -145,9 +145,7 @@ export class SocketGatewayService {
       where: { channelId: idChannel },
     });
     for (const member of channelMembers) {
-      wss
-        .to(member.userId)
-        .emit("changeStatusMember", { channelId: idChannel });
+      wss.to(member.userId).emit("changeStatusMember", { channelId: idChannel });
     }
   }
 
@@ -160,6 +158,8 @@ export class SocketGatewayService {
     }
     wss.to(ids.memberId).emit("kickedFromChannel", ids);
   }
+
+
 
   async messagsSeenEmit(ids: CreateMessageDto, wss: Server) {
     await this.prisma.message.updateMany({

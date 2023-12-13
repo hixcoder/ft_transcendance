@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
@@ -57,7 +56,7 @@ export default function PopoverMenu(prompt: { friendInfo: friendDto }) {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleRemoveFriend: " + error);
+      //console.log("handleRemoveFriend: " + error);
     }
     handleClose();
   }
@@ -80,7 +79,7 @@ export default function PopoverMenu(prompt: { friendInfo: friendDto }) {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleBlockFriend: " + error);
+      //console.log("handleBlockFriend: " + error);
     }
     handleClose();
   }
@@ -112,18 +111,14 @@ export default function PopoverMenu(prompt: { friendInfo: friendDto }) {
         }}
       >
         <div className=" flex flex-col bg-color-main-dark py-2 px-2 rounded-none cursor-pointer">
-          {!prompt.friendInfo.inGaming ? (
-            <p
-              onClick={handlePlayMatch}
-              className="text-white text-sm rounded-md ml-0 py-2 pl-2 pr-14
+          {/* <p
+            onClick={handlePlayMatch}
+            className="text-white text-sm rounded-md ml-0 py-2 pl-2 pr-14
                     
                     hover:bg-color-main-whith  "
-            >
-              Play match
-            </p>
-          ) : (
-            <div />
-          )}
+          >
+            play match
+          </p> */}
           <p
             onClick={handleRemoveFriend}
             className="text-red-500 text-sm rounded-md ml-0 py-2 pl-2 pr-14

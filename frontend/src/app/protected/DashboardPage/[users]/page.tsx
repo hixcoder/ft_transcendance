@@ -15,13 +15,13 @@ export default function DashboardPage() {
     const userName = pathname;
     const segments = userName.split("/");
     const lastSegment = segments.pop() ?? "";
-    console.log(lastSegment);
+    //console.log(lastSegment);
     async function getData() {
       try {
         const usr = await getUserByNick(lastSegment);
         setFriend(usr);
       } catch (error: any) {
-        console.log("Friend alert getData error: " + error);
+        //console.log("Friend alert getData error: " + error);
       }
     }
     getData();

@@ -18,8 +18,8 @@ import {
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
-import { Backend_URL } from "../../../../lib/Constants";
-
+import Lottie from "lottie-react";
+import loadingc from "../../assets/loading.json";
 import { ImCross } from "react-icons/im";
 
 enum Status {
@@ -36,9 +36,6 @@ interface ContextProps {
 
   displayChat: boolean;
   setDisplayChat: Dispatch<SetStateAction<boolean>>;
-
-  openAlertErro: boolean;
-  setOpenAlertError: Dispatch<SetStateAction<boolean>>;
 
   user: ownerDto;
   setUser: Dispatch<SetStateAction<ownerDto>>;
@@ -64,9 +61,6 @@ const GlobalContext = createContext<ContextProps>({
 
   updateInfo: 1,
   setUpdateInfo: () => {},
-
-  openAlertErro: false,
-  setOpenAlertError: () => {},
 
   user: {
     id: "-1",
@@ -106,7 +100,6 @@ export const GlobalContextProvider = ({
   const router = useRouter();
 
   const [displayChat, setDisplayChat] = useState<boolean>(false);
-  const [openAlertErro, setOpenAlertError] = useState<boolean>(false);
   const [updateInfo, setUpdateInfo] = useState<number>(1);
 
   const [user, setUser] = useState<ownerDto>({
@@ -146,7 +139,7 @@ export const GlobalContextProvider = ({
 
   useEffect(() => {
     if (user.id && user.id != "-1") {
-      const socket = io(Backend_URL, {
+      const socket = io(`${process.env.NEXT_PUBLIC_BACK}` || "localhost", {
         transports: ["websocket"],
         query: {
           senderId: user.id,
@@ -162,14 +155,14 @@ export const GlobalContextProvider = ({
     const getDataUser = async () => {
       try {
         const token = Cookies.get("access_token");
-        const id_intra = Cookies.get("intra_id");
-        const res = await fetch(Backend_URL + `/user/intra/${id_intra}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACK}/user/intra/`, {
           method: "GET",
           headers: {
             authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
+
         if (res.ok) {
           const owner = await res.json();
           setUser(owner);
@@ -178,6 +171,7 @@ export const GlobalContextProvider = ({
         }
       } catch (error) {
         router.push("/public/HomePage");
+        //console.log(error);
       }
     };
     if (user.id === "-1") getDataUser();
@@ -211,6 +205,7 @@ export const GlobalContextProvider = ({
         setOpenConfirm(true);
         setInvitedName(data.nameInveted);
       });
+
       socket.on("startGame", (data) => {
         setInviteData({
           userId1: data.userId1,
@@ -219,7 +214,11 @@ export const GlobalContextProvider = ({
           selectedMap: 2,
           isLeft: data.userId1 == user.id ? false : true,
         });
+        setOpenConfirm(false);
         router.push("/protected/GamePage/invite");
+      });
+      socket.on("declien", () => {
+        setOpenConfirm(false);
       });
       // }
     }
@@ -239,8 +238,6 @@ export const GlobalContextProvider = ({
         socket,
         updateInfo,
         setUpdateInfo,
-        openAlertErro,
-        setOpenAlertError,
         displayChat,
         setDisplayChat,
         inviteData,
@@ -256,7 +253,7 @@ export const GlobalContextProvider = ({
             },
           }}
           open={openConfirm}
-          onClose={() => setOpenConfirm(false)}
+          // onClose={() => setOpenConfirm(false)}
           className=""
         >
           <div
@@ -264,7 +261,12 @@ export const GlobalContextProvider = ({
             color="red"
           >
             <div
-              onClick={() => setOpenConfirm(false)}
+              onClick={() => {
+                if (user.id === inviteData.userId1)
+                  socket?.emit("decline", inviteData.userId2);
+                else socket?.emit("decline", inviteData.userId1);
+                setOpenConfirm(false);
+              }}
               className="flex flex-row justify-end mb-2 text-sm md:text-md lg:text-lg"
             >
               <ImCross className="text-gray-400 hover:text-gray-300 cursor-pointer" />
@@ -274,59 +276,64 @@ export const GlobalContextProvider = ({
               alt=""
               className=" w-40 text-sm mx-auto"
             />
-            <DialogContent>
-              <div className="flex flex-col rounded-2xl my-4">
-                <p className="text-gray-300  text-center">
-                  <span className="font-700 text-white hover:underline">
-                    {inviterdName}
-                  </span>{" "}
-                  invite you to pongMaster match
-                </p>
+            {user.id !== inviteData.userId1 ? (
+              <div>
+                <DialogContent>
+                  <div className="flex flex-col rounded-2xl my-4">
+                    <p className="text-gray-300  text-center">
+                      <span className="font-700 text-white hover:underline">
+                        {inviterdName}
+                      </span>{" "}
+                      invite you to pongMaster match
+                    </p>
+                  </div>
+                </DialogContent>
+                <DialogActions>
+                  <div className="flex flex-row items-center justify-center"></div>
+                  <button
+                    onClick={async () => {
+                      socket?.emit("decline", inviteData.userId1);
+                      setOpenConfirm(false);
+
+                      // router.push("/protected/GamePage/invite");
+                    }}
+                    className="w-fit font-meduim  rounded-md   text-white bg-[#323C52] hover:bg-[#43516e]
+                          text-xs  px-4 py-2 mx-2
+                          md:text-sm lg:text-md lg:px-4"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    onClick={async () => {
+                      socket?.emit("accept", data);
+                      setOpenConfirm(false);
+                      router.push("/protected/GamePage/invite");
+                    }}
+                    className="w-fit font-meduim  rounded-md   text-white bg-color-main-whith hover:bg-[#2d55e6]
+              text-xs  px-4 py-2 mx-2
+              md:text-sm lg:text-md lg:px-4"
+                  >
+                    Accept
+                  </button>
+                </DialogActions>
               </div>
-            </DialogContent>
-            <DialogActions>
-              <div className="flex flex-row items-center justify-center"></div>
-              <button
-                onClick={async () => {
-                  // socket?.emit("accept", data);
-                  setOpenConfirm(false);
-                  // router.push("/protected/GamePage/invite");
-                }}
-                className="w-fit font-meduim  rounded-md   text-white bg-[#323C52] hover:bg-[#43516e]
-                            text-xs  px-4 py-2 mx-2
-                            md:text-sm lg:text-md lg:px-4"
-              >
-                Decline
-              </button>
-              <button
-                onClick={async () => {
-                  socket?.emit("accept", data);
-                  setOpenConfirm(false);
-                  router.push("/protected/GamePage/invite");
-                }}
-                className="w-fit font-meduim  rounded-md   text-white bg-color-main-whith hover:bg-[#2d55e6]
-                text-xs  px-4 py-2 mx-2
-                md:text-sm lg:text-md lg:px-4"
-              >
-                Accept
-              </button>
-            </DialogActions>
+            ) : (
+              <div>
+                <DialogContent>
+                  <div className="flex flex-col rounded-2xl my-4 text-center">
+                    <Lottie
+                      animationData={loadingc}
+                      loop={true}
+                      className="h-20 w-20"
+                    />
+                  </div>
+                </DialogContent>
+              </div>
+            )}
           </div>
         </Dialog>
       </div>
 
-      <Stack spacing={2} sx={{ width: "100%" }}>
-        <Snackbar open={openAlertErro} autoHideDuration={6000}>
-          <Alert
-            severity="error"
-            onClose={() => {
-              setOpenAlertError(false);
-            }}
-          >
-            This is an error in the server!
-          </Alert>
-        </Snackbar>
-      </Stack>
       {children}
     </GlobalContext.Provider>
   );

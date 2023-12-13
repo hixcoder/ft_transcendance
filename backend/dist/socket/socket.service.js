@@ -132,9 +132,7 @@ let SocketGatewayService = class SocketGatewayService {
             where: { channelId: ids.receivedId },
         });
         for (const member of channelMembers) {
-            wss
-                .to(member.userId)
-                .emit("updateChannel", { idChannel: ids.receivedId });
+            wss.to(member.userId).emit("updateChannel", { idChannel: ids.receivedId });
         }
     }
     async mutedUserInChannel(idChannel, wss) {
@@ -142,9 +140,7 @@ let SocketGatewayService = class SocketGatewayService {
             where: { channelId: idChannel },
         });
         for (const member of channelMembers) {
-            wss
-                .to(member.userId)
-                .emit("mutedUserInChannel", { idChannel: idChannel });
+            wss.to(member.userId).emit("mutedUserInChannel", { idChannel: idChannel });
         }
     }
     async changeStatusMember(idChannel, wss) {
@@ -152,9 +148,7 @@ let SocketGatewayService = class SocketGatewayService {
             where: { channelId: idChannel },
         });
         for (const member of channelMembers) {
-            wss
-                .to(member.userId)
-                .emit("changeStatusMember", { channelId: idChannel });
+            wss.to(member.userId).emit("changeStatusMember", { channelId: idChannel });
         }
     }
     async kickedFromChannel(ids, wss) {

@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+
+require("dotenv").config();
+
 const nextConfig = {
   async redirects() {
     return [
@@ -10,10 +13,13 @@ const nextConfig = {
     ];
   },
 
+  // env: {
+  //   NEXT_PUBLIC_BACK: `${process.env.BACK_HOST}`,
+  // },
+
   images: {
-    domains: ["cdn.intra.42.fr", "localhost", "lh3.googleusercontent.com"],
+    domains: ["cdn.intra.42.fr", "localhost"],
   },
 };
 
 module.exports = nextConfig;
-

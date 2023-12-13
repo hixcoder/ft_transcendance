@@ -20,20 +20,19 @@ import { BallDto, PaddleDto } from "src/game/dto";
 
 @WebSocketGateway()
 export class SocketGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     // private gameService: PongServise,
     private socketGatewayService: SocketGatewayService,
     private messagesService: MessagesService,
     private gameService: GameService,
     private prisma: PrismaService
-  ) {}
+  ) { }
 
   @WebSocketServer() server: Server;
 
   afterInit(server: any) {
-    // console.log("Gateway Initialized");
+    // //console.log("Gateway Initialized");
   }
 
   async handleConnection(client: Socket) {
@@ -63,6 +62,7 @@ export class SocketGateway
   async updateData(@MessageBody() ids: CreateMessageDto) {
     this.socketGatewayService.updateData(ids, this.server);
   }
+
 
   @SubscribeMessage("updateStatusGeust")
   async updateStatusGeust(@MessageBody() senderId: string) {
@@ -100,15 +100,20 @@ export class SocketGateway
     this.socketGatewayService.mutedUserInChannel(idChannel, this.server);
   }
 
+
   @SubscribeMessage("changeStatusMember")
   async changeStatusMember(@MessageBody() idChannel: string) {
     this.socketGatewayService.changeStatusMember(idChannel, this.server);
   }
 
+
   @SubscribeMessage("messagsSeenEmit")
   async messagsSeenEmit(@MessageBody() ids: CreateMessageDto) {
     this.socketGatewayService.messagsSeenEmit(ids, this.server);
   }
+
+
+
 
   ROUND_LIMIT = 6;
   joindRoom = 0;
@@ -148,7 +153,7 @@ export class SocketGateway
   private roomState: Map<string, RoomState> = new Map();
   private ballPositionInterval: Map<string, NodeJS.Timeout> = new Map();
 
-  onModuleInit() {}
+  onModuleInit() { }
 
   collision(ball: any, player: any) {
     ball.top = ball.y - (ball.radius + 1);
@@ -199,6 +204,15 @@ export class SocketGateway
           ro.ball.y - ro.ball.radius < 0
         ) {
           ro.ball.velocityY = -ro.ball.velocityY;
+
+        }
+        if (ro.ball.y + ro.ball.radius > 400) {
+
+          ro.ball.y -= 10;
+          // ro.ball.velocityX = -ro.ball.velocityX;
+        } else if (ro.ball.y - ro.ball.radius < 0) {
+          // ro.ball.velocityY = -ro.ball.velocityY
+          ro.ball.y += 10;
         }
         let user: any = ro.ball.x < 600 / 2 ? ro.player1 : ro.player2;
         if (this.collision(ro.ball, user)) {
@@ -272,15 +286,15 @@ export class SocketGateway
 
     if (p1.score + p2.score === this.ROUND_LIMIT) {
       if (p1.score == p2.score) {
-        console.log(player1, player2);
+        //console.log(player1, player2);
         this.server.to(roomName).emit("gameOver", "draw");
       }
-      if (p1.score > p2.score) {
-        console.log(player1, player2);
+      else if (p1.score > p2.score) {
+        //console.log(player1, player2);
         this.server.to(player1).emit("gameOver", "win");
         this.server.to(player2).emit("gameOver", "lose");
       } else {
-        console.log(player1, player2);
+        //console.log(player1, player2);
         this.server.to(player1).emit("gameOver", "lose");
         this.server.to(player2).emit("gameOver", "win");
       }
@@ -439,6 +453,7 @@ export class SocketGateway
     client.join(data.userId1);
 
     // this.rooms.set(data.userId1 + data.userId2, [data.userId1, data.userId2]);
+    this.server.to(data.userId1).emit("invite", data);
     this.server.to(data.userId2).emit("invite", data);
   }
 
@@ -469,6 +484,28 @@ export class SocketGateway
     this.gameService.resetBall(this.roomState.get(roomName).ball);
     this.startEmittingBallPosition(roomName, data.userId2);
     this.clients.clear();
+  }
+
+  @SubscribeMessage("decline")
+  onDeclien(client: Socket, Id: any) {
+    // this.inviteRoom.set(data.userId1, client);
+    // client.join(data.userId1);
+
+    // this.rooms.set(data.userId1 + data.userId2, [data.userId1, data.userId2]);
+    this.server.to(Id).emit("declien");
+    // this.server.to(data.userId2).emit("declien", data);
+  }
+
+  @SubscribeMessage("clear")
+  onOut(client: Socket, Id: any) {
+
+    this.clients.delete(Id);
+    this.joindClients.delete(Id);
+    // this.clients.set(id, client);
+    // this.joindClients.set(id, 0);
+    // Id.leave(Id);
+    // client.join(id);
+
   }
 }
 

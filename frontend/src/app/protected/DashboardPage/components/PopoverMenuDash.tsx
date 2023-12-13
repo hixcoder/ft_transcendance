@@ -37,11 +37,14 @@ export default function PopoverMenuDash(prompt: {
   const contxt = useGlobalDataContext();
 
   function handlePlayMatch() {
+    //console.log("owner=", prompt.user.id);
+    //console.log("invtedd=", prompt.friendInfo.id);
     PlayInvite({
       userId1: prompt.user.id,
       userId2: prompt.friendInfo.id,
+
       socket: socket,
-      nameInveted: prompt.friendInfo.nickname,
+      nameInveted: prompt.user.nickname,
     });
     handleClose();
   }
@@ -60,7 +63,7 @@ export default function PopoverMenuDash(prompt: {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleRemoveFriend: " + error);
+      //console.log("handleRemoveFriend: " + error);
     }
     handleClose();
   }
@@ -83,7 +86,7 @@ export default function PopoverMenuDash(prompt: {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleBlockFriend: " + error);
+      //console.log("handleBlockFriend: " + error);
     }
     handleClose();
   }
@@ -98,10 +101,10 @@ export default function PopoverMenuDash(prompt: {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleInvite: " + error);
+      //console.log("handleInvite: " + error);
     }
     handleClose();
-    // console.log("handleInvite: " + userInfo.username);
+    // //console.log("handleInvite: " + userInfo.username);
   }
   // ===================== /handle popover options ===============
 

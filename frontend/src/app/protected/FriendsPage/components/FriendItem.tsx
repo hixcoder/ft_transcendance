@@ -17,14 +17,12 @@ import { useGlobalDataContext } from "./FriendCategory";
 import PopoverMenu from "./PopoverMenu";
 import { useGlobalContext } from "../../context/store";
 import { getUserGeust } from "../../ChatPage/api/fetch-users";
-import { useEffect } from "react";
 export default function FriendItem(prompt: {
   friendInfo: friendDto;
   itemsStatus: string;
 }) {
   // ==================== handleUnblock =====================
-  const { updateInfo, user, socket, setGeust } = useGlobalContext();
-
+  const { user, socket, setGeust } = useGlobalContext();
   const contxt = useGlobalDataContext();
   const router = useRouter();
   async function handleUnblock(): Promise<void> {
@@ -41,7 +39,7 @@ export default function FriendItem(prompt: {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleBlockFriend: " + error);
+      //console.log("handleBlockFriend: " + error);
     }
   }
   // ==================== /handleUnblock =====================
@@ -61,7 +59,7 @@ export default function FriendItem(prompt: {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleReject: " + error);
+      //console.log("handleReject: " + error);
     }
   }
   // ==================== /handleReject =====================
@@ -81,7 +79,7 @@ export default function FriendItem(prompt: {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleAccept: " + error);
+      //console.log("handleAccept: " + error);
     }
   }
   // ==================== /handleAccept =====================
@@ -101,7 +99,7 @@ export default function FriendItem(prompt: {
         receivedId: prompt.friendInfo.id,
       });
     } catch (error) {
-      console.log("handleCancel: " + error);
+      //console.log("handleCancel: " + error);
     }
   }
   // ==================== /handleCancel =====================
@@ -110,6 +108,7 @@ export default function FriendItem(prompt: {
       <Link href={`/protected/DashboardPage/${prompt.friendInfo.nickname}`}>
         <div className="flex flex-row cursor-pointer">
           {/* <Badge badgeContent={0} color="success" invisible={false} /> */}
+
           <Badge
             badgeContent={4}
             sx={{

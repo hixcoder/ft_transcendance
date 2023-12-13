@@ -39,8 +39,8 @@ export default function MembersChannel() {
 
 
     const getMemberChannelForEmit = async (data: { idChannel: string }) => {
-        console.log(geust.id)
-        console.log(data.idChannel);
+        //console.log(geust.id)
+        //console.log(data.idChannel);
         if (geust.id === data.idChannel) {
             const tmp: { regularMembres: memberChannelDto[], bannedMembers: memberChannelDto[] }
                 = await getMembersChannel(geust.id);
@@ -102,7 +102,7 @@ export default function MembersChannel() {
                         id: '-1',
                     }
                 });
-            } else { getMemberChannel(), console.log("kickedFromChannel called") }
+            } else { getMemberChannel() }
         }
         if (socket) {
             socket.on("kickedFromChannel", handleKickedMemeber);

@@ -55,10 +55,10 @@ export class FriendshipService {
           nickname: recieverUsr,
         },
       });
-      console.log(oneUser);
+      //console.log(oneUser);
       return oneUser;
     } catch (error) {
-      console.log("oneUser error");
+      //console.log("oneUser error");
       return { error: error };
     }
   }
@@ -198,7 +198,7 @@ export class FriendshipService {
           },
         });
         if (!isEmpty(user)) {
-          console.log(user);
+          //console.log(user);
           blockedFriends.push(user);
         }
       }
@@ -337,7 +337,7 @@ export class FriendshipService {
           },
         },
       });
-      console.log("userToAccept : ", userToAccept);
+      //console.log("userToAccept : ", userToAccept);
       if (userToAccept) {
         const user = await this.prisma.friend.create({
           data: {
@@ -345,7 +345,7 @@ export class FriendshipService {
             receivedId: recieverId,
           },
         });
-        console.log();
+        //console.log();
         await this.prisma.friendRequest.delete({
           where: {
             Unique_Sender_Receiver: {
